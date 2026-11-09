@@ -118,4 +118,11 @@ return [
 
     'password_timeout' => env('AUTH_PASSWORD_TIMEOUT', 10800),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Configuraciones Personalizadas de Seguridad
+    |--------------------------------------------------------------------------
+    */
+    'check_initial_password' => env('CHECK_INITIAL_PASSWORD', true),
+
 ];

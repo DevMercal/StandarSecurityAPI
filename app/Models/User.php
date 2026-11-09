@@ -11,6 +11,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Spatie\Permission\Traits\HasRoles;
+use Illuminate\Support\Facades\Hash;
 
 #[Fillable(['cedula', 'username','name', 'email', 'password', 'id_time_token','id_expiry_month', 'is_active'])]
 #[Hidden(['password', 'remember_token'])]
@@ -41,5 +42,22 @@ class User extends Authenticatable implements JWTSubject
     public function getJWTCustomClaims()
     {
         return [];
+    }
+
+    public function getPasswordIsDefaultAttribute()
+    {
+        return Hash::check($this->cedula, $this->password);
+    }
+
+    public function passwordHistories(){
+        return $this->hasMany(PasswordHistory::class);
+    }
+
+    public function expiryMonth(){
+        return $this->belongsTo(ExpiryMonth::class, 'id_expiry_month', 'id_expiry_month');
+    }
+    
+    public function timeToken(){
+        return $this->belongsTo(TimeToken::class, 'id_time_token', 'id_time_token');
     }
 }
