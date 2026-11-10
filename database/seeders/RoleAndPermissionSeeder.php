@@ -25,10 +25,9 @@ class RoleAndPermissionSeeder extends Seeder
             ['name' => 'revoke_user_session', 'description' => 'Remover sesión de usuario'],
             /* PERMISOS DE MODELO DE ROLES*/
             ['name' => 'view_roles', 'description' => 'Ver roles'],
-            ['name' => 'create_roles', 'description' => 'Crear roles'],
-            ['name' => 'show_roles', 'description' => 'Ver rol'],
-            ['name' => 'update_roles', 'description' => 'Detalles del rol'],
-            ['name' => 'update_roles', 'description' => 'Editar rol'],
+            ['name' => 'create_role', 'description' => 'Crear roles'],
+            ['name' => 'show_role', 'description' => 'Detalle del rol'],
+            ['name' => 'update_role', 'description' => 'Editar rol'],
             ['name' => 'assing_permissions_rol', 'description' => 'Asignar permisos al rol'],
             /*PERMISOS DE MODELO DE PERMISOS */
             ['name' => 'view_permissions', 'description' => 'Ver permisos'],

@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\PermissionsController;
+use App\Http\Controllers\RoleController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -19,25 +21,9 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/me', [AuthController::class, 'me']);
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::post('/refresh', [AuthController::class, 'refresh']);
-});
 
-
-// Rutas protegidas exigiendo un Rol específico de Spatie
-Route::middleware(['auth:api', 'role:admin'])->group(function () {
-    Route::get('/admin/reports', function () {
-        return response()->json([
-            'success' => true,
-            'message' => 'Reportes confidenciales de administración.'
-        ]);
-    });
-});
-
-// Rutas protegidas exigiendo un Permiso específico de Spatie
-Route::middleware(['auth:api', 'permission:editar-usuarios'])->group(function () {
-    Route::put('/users/{id}', function ($id) {
-        return response()->json([
-            'success' => true,
-            'message' => "Usuario $id actualizado correctamente."
-        ]);
-    });
+    //RUTAS DE MODELO DE ROLES Y PERMISSIONS
+    Route::apiResource('roles', RoleController::class);
+    Route::get('permissions', [PermissionsController::class, 'index']);
+    Route::post('roles/assign-permissions/{id}', [RoleController::class, 'assignPermissions']);
 });
