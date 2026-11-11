@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\RoleAndPermissionResource;
-use App\Trait\AuthorizesApiRequest;
 use Exception;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
-use Illuminate\Validation\ValidationException;
 use Spatie\Permission\Models\Role;
+use App\Trait\AuthorizesApiRequest;
+use Illuminate\Support\Facades\Auth;
+use App\Http\Resources\RoleAndPermissionResource;
+use Illuminate\Validation\ValidationException;
 
 class RoleController extends Controller
 {

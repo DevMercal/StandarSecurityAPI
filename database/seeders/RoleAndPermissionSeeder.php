@@ -20,7 +20,7 @@ class RoleAndPermissionSeeder extends Seeder
             ['name' => 'create_user', 'description' => 'Crear usuario'],
             ['name' => 'update_user', 'description' => 'Editar usuario'],
             ['name' => 'assign_roles', 'description' => 'Asignar Rol'],
-            ['name' => 'assign_permissions', 'description' => 'Asignar Permisos al usuario'],
+            ['name' => 'assign_permissions_to_users', 'description' => 'Asignar Permisos al usuario'],
             ['name' => 'resert_password', 'description' => 'Resetear Contraseña del usuario'],
             ['name' => 'revoke_user_session', 'description' => 'Remover sesión de usuario'],
             /* PERMISOS DE MODELO DE ROLES*/
