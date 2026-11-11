@@ -9,9 +9,14 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Trait\AuthorizesApiRequest;
 use App\Http\Resources\UserResource;
+use App\Models\SigespEmployee;
 use App\Observers\UserObserver;
+use App\Rules\NotUserPassword;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
 
 class UserController extends Controller
 {
@@ -253,5 +258,118 @@ class UserController extends Controller
                 'error' => $e->getMessage()
             ], 500);
        }
+    }
+
+    public function updatePassword(Request $request)
+    {    
+        try {
+            $cedulaUser = $request->cedula;
+            $user = User::where('cedula', $cedulaUser)->first();
+
+            if (!$user) {
+                return response()->json([
+                    'error' => 'Usuario no encontrado con esa cédula.'
+                ], 404);
+            }
+
+            $request->validate([
+                'cedula' => ['required', 'integer', 'digits_between:7,8', 'exists:users,cedula'],
+                'old_password' => ['required', 'string'],
+                'password' => [
+                    'required',
+                    'confirmed',
+                    'min:8',
+                    'max:16',
+                    Password::min(8)
+                        ->letters()
+                        ->mixedCase() 
+                        ->numbers()  
+                        ->symbols(),
+                    new NotUserPassword($user),  
+                ],
+            ]);
+
+            if (!Hash::check($request->old_password, $user->password)) {
+                return response()->json([
+                    'error' => 'La contraseña actual es incorrecta.'
+                ], 401);
+            } 
+
+            $user->password = Hash::make($request->password);       
+            $user->password_changed_at = now();   
+            $user->is_active = 1;
+            $user->save();
+
+            return response()->json([
+                'message' => 'Contraseña actualizada con éxito y periodo de validez reiniciado.'
+            ], 200);
+
+        } catch (ValidationException $e) {
+            // Captura los errores de validación de $request->validate()
+            return response()->json([
+                'message' => 'Los datos proporcionados no son válidos.',
+                'errors' => $e->errors()
+            ], 422);
+
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => 'Error Server',
+                'errors' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function resetPassword(Request $request){
+        if ($authError = $this->authorizeApiUser('resert_password')) {
+            return $authError;
+        }
+        try {
+            $request->validate([
+                'cedula' => 'required|integer|digits_between:7,8|exists:users,cedula'
+            ]);
+            $user = User::where('cedula', $request->cedula)->first();
+            if (!$user) {
+                return response()->json([
+                    'message' => 'Usuario no encontrado.'
+                ], 404);
+            }
+            $user->password = Hash::make($user->cedula);
+            $user->is_active = 1;
+            //$user->active_jti = null;          // ← invalidar sesión activa
+            //$user->session_expires_at = null;  // ← limpiar expiración
+            $user->password_changed_at = null; // ← forzar cambio de clave al próximo login
+            $user->save();
+            return response()->json([
+                'status' => 'success',
+                'message' => "Reinicio Exitoso: Se asignó la cédula como clave temporal y se activó la cuenta de {$user->name}.",
+                'data' => [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'is_active' => $user->is_active, // Aquí confirmas el 1
+                    'updated_at' => $user->updated_at->format('Y-m-d H:i:s'),
+                ]
+            ], 200, [], JSON_UNESCAPED_UNICODE);
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => 'Errors Serve',
+                'errors' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function searchByCedulaSigesp ($cedula) {
+        $employee = SigespEmployee::where('cedula', $cedula)->first();
+
+        if (!$employee) {
+            return response()->json([
+                'message' => 'Cedula ingresada no encontrada en sistema de gestión.',
+            ], 200);
+        }
+        return response()->json([
+            'message' => 'Empleado encontrado exitosamente.',
+            'employee' => [
+                'fullName' => $employee->nombre . " , " . $employee->apellido
+            ]
+        ], 200);
     }
 }

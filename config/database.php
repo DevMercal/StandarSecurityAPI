@@ -98,6 +98,19 @@ return [
             'search_path' => 'public',
             'sslmode' => env('DB_SSLMODE', 'prefer'),
         ],
+            'pgsql_sigesp' => [
+            'driver' => 'pgsql',
+            'host' => env('DB_VISTA_HOST', '127.0.0.1'),
+            'port' => env('DB_VISTA_PORT', '5432'),
+            'database' => env('DB_VISTA_DATABASE', ''),
+            'username' => env('DB_VISTA_USERNAME', ''),
+            'password' => env('DB_VISTA_PASSWORD', ''),
+            'charset' => 'utf8',
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'search_path' => 'public', // Cambia el esquema si no usas el public
+            'sslmode' => 'prefer',
+        ],
 
         'sqlsrv' => [
             'driver' => 'sqlsrv',

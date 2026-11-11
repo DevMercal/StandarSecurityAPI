@@ -30,4 +30,11 @@ Route::middleware('auth:api')->group(function () {
 
     //RUTAS DE MODELO DE USUARIOS
     Route::apiResource('users', UserController::class);
+    Route::controller(UserController::class)->group(function () {
+        Route::post('users/assign-role/{id}', 'assignRoles');
+        Route::post('users/resetPassword', 'resetPassword');
+        Route::post('users/change-password', 'updatePassword');
+        Route::post('users/{id}/revoke-session', 'revokeSession');
+        Route::get('users/employees/search/{cedula}', 'searchByCedulaSigesp');
+    });
 });
